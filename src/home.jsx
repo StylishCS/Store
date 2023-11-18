@@ -14,7 +14,7 @@ export default function Home(){
   const {email} = useContext(UserContext);
   const [categories, setCategories] = useState([]);
     useEffect(()=>{   
-      if(cookies.getItem("token").length > 0 && email)
+      if(cookies.getItem("token") && email)
       http.GET("/products/categories", {headers:{"Authorization" : cookies.getItem("token")}})
       .then((res)=>{
         setCategories(res);
