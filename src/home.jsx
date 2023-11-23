@@ -1,27 +1,27 @@
 import { useContext, useEffect, useState } from "react"
-import { UserContext } from "./UserContext"
+import { useUserContext } from "./UserContext"
 import axios from "axios";
 import CatCard  from "./components/CatCard";
 import AddCard from "./components/AddCard";
-import cookies from "js-cookies"
+// import cookies from "js-cookies"
 import http from "./http"
 
 
 
-export default function Home(){
+export default function Home() {
  
   
-  const {email} = useContext(UserContext);
+  const {email} = useUserContext();
   const [categories, setCategories] = useState([]);
     useEffect(()=>{   
-      if(cookies.getItem("token") && email)
-      http.GET("/products/categories", {headers:{"Authorization" : cookies.getItem("token")}})
-      .then((res)=>{
-        setCategories(res);
-      })
-      .catch((err)=>{
-        console.error(err)
-      })
+      if(email)
+        http.GET("/products/categories")
+        .then((res)=>{
+          setCategories(res);
+        })
+        .catch((err)=>{
+          console.error(err)
+        })
     }, [email])
     return (
     <>

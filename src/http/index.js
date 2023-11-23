@@ -1,7 +1,7 @@
 import axios from "axios";
 import cookies from "js-cookies"; 
 axios.defaults.headers.common["Authorization"] = cookies.getItem("token");
-axios.defaults.baseURL = "http://localhost:8080";
+axios.defaults.baseURL = "https://capris-basket-clam.cyclic.app/";
 axios.defaults.withCredentials = true;
 
 

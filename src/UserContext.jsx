@@ -1,56 +1,61 @@
-import { createContext, useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import cookies from "js-cookies";
+import { createContext, useContext, useState } from "react";
+import http from "./http";
+const UserContext = createContext();
 
-export const UserContext = createContext();
+const user = localStorage.getItem("user");
+const email = user ? JSON.parse(localStorage.getItem("user")).email : null;
 
-// axios.defaults.headers.common['Authorization'] = cookies.getItem('token');
-// axios.defaults.baseURL = "http://localhost:8080";
-// axios.defaults.withCredentials = true;
+const initialState = {
+  _id: "",
+  email: email
+}
 
-export function UserContextProvider({ children }) {
+const UserContextProvider = ({children}) => {
+  const [state, setState] = useState(initialState)
 
-  const [email, setEmail] = useState(null)
-  const [_id, setId] = useState(null)
-  const [token, setToken] = useState(null)
 
-  const navigate = useNavigate()
- 
-  
-  useEffect(() => {
-    // Load user data from localStorage on component mount
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setEmail(JSON.parse(storedUser).email);
-      setId(JSON.parse(storedUser)._id);
-      navigate("/")
+  const loginUser = async (email, password) => {
+    try {
+      const {user} = await http.POST("/users/login", { email, password })
+      // setState((prevValue) => {
+      //   retrun (
+      //     {
+      //       ...prevValue,
+      //       email: user.email
+      //     }
+      //   )
+      // })
+      console.log(user);
+      if (localStorage.getItem("user")) {
+        localStorage.removeItem("user");
+      } else {
+        localStorage.setItem("user", JSON.stringify({_id: user._id, email: user.email}));
+      }
+      setState({_id: user._id, email: user.email});
+    } catch (err) {
+      console.log(err);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    if(email)
-    localStorage.setItem('user', JSON.stringify({email, _id}))
-  }, [email, _id])
-  
-
-  useEffect(() => {
-    if(email)
-    navigate("/")
-  else
-  navigate("/login")
-
-  }, [email])
-
-  useEffect(() => {
-    setToken(cookies.getItem("token"));
-  }, [token])
-  
-
+  const logoutUser = async () => {
+    await http.POST("/users/logout")
+    localStorage.clear();
+    setState({_id: "", email: null})
+  };
   
   return (
-    <UserContext.Provider value={{email, _id, token, setEmail, setId,  setToken}}>
+    <UserContext.Provider value={{
+      ...state,
+      loginUser,
+      logoutUser,
+      }}>
       {children}
     </UserContext.Provider>
-  );
+  )
 }
+
+const useUserContext = () => {
+  return useContext(UserContext);
+}
+
+export {useUserContext, UserContextProvider}

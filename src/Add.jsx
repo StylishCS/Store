@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { UserContext } from "./UserContext"
+import { useUserContext } from "./UserContext"
 import axios from "axios";
 import ProdCard  from "./components/prodCard";
 import { Link } from 'react-router-dom';
@@ -13,7 +13,7 @@ export default function Search(){
     const [netPrice,setNet] = useState("");
     const [labelId,setLabelId] = useState("");
     const [stock, setStock] = useState("");
-    const {email, id, setId, setEmail} = useContext(UserContext);
+    const {email, id, setId, setEmail} = useUserContext();
 
     const [categories, setCategories] = useState([]);
 

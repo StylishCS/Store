@@ -1,18 +1,14 @@
 import {useContext} from 'react'
 import {Link} from "react-router-dom"
-import { UserContext } from '../UserContext'
+import { useUserContext } from '../UserContext'
 import http from '../http';
 
 
 export default function Navbar({ navTitle ,setNavTitle }) {
-  const {email, setEmail, id, setId} = useContext(UserContext)
-  function logout(){
-        http.POST("/users/logout").then(()=>{
-            setId(null);
-            setEmail(null);
-            localStorage.clear();
-        })
-    }
+  const {email, logoutUser} = useUserContext()
+  function logout() {
+    logoutUser();
+  }
 
   return (
     email && <nav className="bg-gray-800 p-4">

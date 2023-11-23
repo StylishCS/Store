@@ -1,5 +1,5 @@
 import { useContext, useState, useCallback, useEffect } from "react";
-import { UserContext } from "./UserContext";
+import { useUserContext } from "./UserContext";
 import http from "./http";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
@@ -9,20 +9,27 @@ import cookies from "js-cookies";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setEmail: setLoggedInEmail, setId, email: ContextEmail, token, setToken } = useContext(UserContext);
+  const { 
+    email: userEmail, 
+    loginUser } = useUserContext();
   const navigate = useNavigate()
   
+    useEffect(() => {
+      if (userEmail) {
+        navigate('/')
+      }
+    }, [userEmail])
+
   const login = async (ev) => {
     ev.preventDefault();
     try {
-      const {user} = await http.POST("/users/login", { email, password })
-      const {email: backendEmail, _id} = user
-      
-      setLoggedInEmail(backendEmail);
-      setId(_id);
-      setToken(cookies.getItem("token"))
+      // const {user} = await http.POST("/users/login", { email, password })
+      // const {email: backendEmail, _id} = user
+      // setLoggedInEmail(backendEmail);
+      // setId(_id);
+      // setToken(cookies.getItem("token"))
+      loginUser(email, password);
       navigate("/");
-      
     } catch (error) {
       console.log(error);
     }
